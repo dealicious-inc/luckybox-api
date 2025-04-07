@@ -1,0 +1,39 @@
+### Get Auction by ID
+GET http://localhost:8080/api/auctions/2
+Accept: application/json
+
+### Create Auction
+POST http://localhost:8080/api/auctions
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "New Auction Title",
+  "description": "New auction description",
+  "startPrice": 500,
+  "startTime": "2023-10-01T10:00:00",
+  "endTime": "2023-10-10T10:00:00",
+  "sellerId": 1
+}
+
+### Update Auction
+PUT http://localhost:8080/api/auctions/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Updated Auction Title",
+  "description": "Updated auction description",
+  "startPrice": 30000,
+  "startTime": "2023-10-02T10:00:00",
+  "endTime": "2023-10-11T10:00:00"
+}
+
+### Delete Auction
+DELETE http://localhost:8080/api/auctions/1
+Accept: application/json
+
+### Get All Auctions
+GET http://localhost:8080/api/auctions
+Accept: application/json
+
