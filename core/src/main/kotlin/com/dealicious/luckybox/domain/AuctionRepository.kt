@@ -1,7 +1,7 @@
-package com.dealicious.luckybox.infrastructure.jpa
+package com.dealicious.luckybox.domain
 
-import com.dealicious.luckybox.domain.model.Auction
-import com.dealicious.luckybox.domain.model.AuctionStatus
+import com.dealicious.luckybox.domain.Auction
+import com.dealicious.luckybox.domain.AuctionStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

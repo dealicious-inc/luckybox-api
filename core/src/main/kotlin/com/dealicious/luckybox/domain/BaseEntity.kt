@@ -1,4 +1,4 @@
-package com.dealicious.luckybox.domain.model
+package com.dealicious.luckybox.domain
 
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate

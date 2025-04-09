@@ -1,6 +1,6 @@
 package com.dealicious.luckybox.presentation.dto
 
-import com.dealicious.luckybox.domain.model.Auction
+import com.dealicious.luckybox.domain.Auction
 import java.time.LocalDateTime
 
 data class AuctionResponse(
