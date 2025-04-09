@@ -2,45 +2,67 @@ plugins {
 	val kotlinVersion = "2.0.21"
 	kotlin("jvm") version kotlinVersion
 	kotlin("plugin.spring") version kotlinVersion
-	kotlin("plugin.jpa") version kotlinVersion
 
 	id("org.springframework.boot") version "3.4.4"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "com.dealicious"
-version = "0.0.1-SNAPSHOT"
+tasks.bootJar {
+	enabled = false
+}
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+tasks.jar {
+	enabled = true
+}
+
+allprojects {
+	group = "com.dealicious"
+	version = "0.0.1-SNAPSHOT"
+
+	repositories {
+		mavenCentral()
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+subprojects {
+	apply(plugin = "org.jetbrains.kotlin.jvm")
+	apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 
-dependencies {
-	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	apply(plugin = "org.springframework.boot")
+	apply(plugin = "io.spring.dependency-management")
+	apply(plugin = "org.jetbrains.kotlin.jvm")
 
-	runtimeOnly("com.mysql:mysql-connector-j")
-	runtimeOnly("com.h2database:h2")
-	
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
+	dependencies {
+		implementation("org.springframework.boot:spring-boot-starter")
+		implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-kotlin {
-	compilerOptions {
-		freeCompilerArgs.addAll("-Xjsr305=strict")
+		testImplementation("org.springframework.boot:spring-boot-starter-test")
+		testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+		testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	}
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
-}
+
+//	java {
+//		toolchain {
+//			languageVersion = JavaLanguageVersion.of(21)
+//		}
+//	}
+
+
+//kotlin {
+//	compilerOptions {
+//		freeCompilerArgs.addAll("-Xjsr305=strict")
+//	}
+//}
+//
+//tasks.withType<Test> {
+//	useJUnitPlatform()
+//}
+
+
+
+
+
+
+

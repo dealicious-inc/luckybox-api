@@ -1,6 +1,6 @@
 package com.dealicious.luckybox.domain.model
 
-import BaseEntity
+import com.dealicious.luckybox.domain.model.BaseEntity
 import java.time.LocalDateTime
 import jakarta.persistence.*
 

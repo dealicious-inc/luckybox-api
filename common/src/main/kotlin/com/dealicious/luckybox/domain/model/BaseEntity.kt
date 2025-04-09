@@ -1,3 +1,5 @@
+package com.dealicious.luckybox.domain.model
+
 import jakarta.persistence.*
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate

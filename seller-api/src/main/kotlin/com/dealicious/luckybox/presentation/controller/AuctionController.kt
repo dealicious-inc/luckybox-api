@@ -1,8 +1,6 @@
 package com.dealicious.luckybox.presentation.controller
 
 import com.dealicious.luckybox.application.service.AuctionService
-import com.dealicious.luckybox.domain.model.Auction
-import com.dealicious.luckybox.domain.model.AuctionStatus
 import com.dealicious.luckybox.presentation.dto.CreateAuctionRequest
 import com.dealicious.luckybox.presentation.dto.AuctionResponse
 import org.springframework.http.ResponseEntity
