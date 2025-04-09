@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  application:
+    name: luckybox-${spring.config.activate.on-profile}
+
+  datasource:
+    url: jdbc:log4jdbc:mysql://127.0.0.1:6033/dealicious
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username:
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: none
