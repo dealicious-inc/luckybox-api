@@ -1,4 +1,4 @@
-package com.dealicious.luckybox.infrastructure.persistence
+package com.dealicious.luckybox.infrastructure.jpa
 
 import com.dealicious.luckybox.domain.model.Auction
 import com.dealicious.luckybox.domain.model.AuctionStatus

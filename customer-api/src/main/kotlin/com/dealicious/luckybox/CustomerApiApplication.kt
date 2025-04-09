@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 
 @EnableJpaAuditing
 @SpringBootApplication
-class SellerApiApplication
+class CustomerApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<SellerApiApplication>(*args)
+    runApplication<CustomerApiApplication>(*args)
 }

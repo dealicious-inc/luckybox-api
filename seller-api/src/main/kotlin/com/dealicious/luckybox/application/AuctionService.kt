@@ -2,7 +2,7 @@ package com.dealicious.luckybox.application.service
 
 import com.dealicious.luckybox.domain.model.Auction
 import com.dealicious.luckybox.domain.model.AuctionStatus
-import com.dealicious.luckybox.infrastructure.persistence.AuctionRepository
+import com.dealicious.luckybox.infrastructure.jpa.AuctionRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime

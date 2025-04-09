@@ -1,10 +1,9 @@
 plugins {
-	val kotlinVersion = "2.0.21"
-	kotlin("jvm") version kotlinVersion
-	kotlin("plugin.spring") version kotlinVersion
+	kotlin("jvm")
+	kotlin("plugin.spring")
 
-	id("org.springframework.boot") version "3.4.4"
-	id("io.spring.dependency-management") version "1.1.7"
+	id("org.springframework.boot")
+	id("io.spring.dependency-management")
 }
 
 tasks.bootJar {
@@ -13,6 +12,12 @@ tasks.bootJar {
 
 tasks.jar {
 	enabled = true
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 allprojects {
@@ -30,7 +35,12 @@ subprojects {
 
 	apply(plugin = "org.springframework.boot")
 	apply(plugin = "io.spring.dependency-management")
-	apply(plugin = "org.jetbrains.kotlin.jvm")
+
+	kotlin {
+		compilerOptions {
+			freeCompilerArgs.addAll("-Xjsr305=strict")
+		}
+	}
 
 	dependencies {
 		implementation("org.springframework.boot:spring-boot-starter")
@@ -40,25 +50,18 @@ subprojects {
 		testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 		testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	}
+
+	tasks.withType<Test> {
+		useJUnitPlatform()
+	}
 }
 
 
-//	java {
-//		toolchain {
-//			languageVersion = JavaLanguageVersion.of(21)
-//		}
-//	}
 
 
-//kotlin {
-//	compilerOptions {
-//		freeCompilerArgs.addAll("-Xjsr305=strict")
-//	}
-//}
-//
-//tasks.withType<Test> {
-//	useJUnitPlatform()
-//}
+
+
+
 
 
 

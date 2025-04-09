@@ -1,21 +1,4 @@
-plugins {
-    kotlin("jvm")
-}
-
-group = "com.dealicious"
-version = "0.0.1-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    testImplementation(kotlin("test"))
-}
-
-tasks.test {
-    useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(21)
+    implementation(project(":core"))
+    implementation("org.springframework.boot:spring-boot-starter-web")
 }
