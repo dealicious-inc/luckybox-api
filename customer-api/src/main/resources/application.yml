@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+oauth2:
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID:69448299e8b4e6942b446df6779a7985}
+    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:8080/api/v1/auth/kakao/login}
+  naver:
+    client-id: ${NAVER_CLIENT_ID:Qry6Q4D10IYzXY2zwlut}
+    client-secret: ${NAVER_CLIENT_SECRET:3tib4OgLtq}
+    redirect-uri: ${NAVER_REDIRECT_URI:http://localhost:8080/api/v1/auth/naver/login}
+
+jwt:
+  secret: ${JWT_SECRET:0123456789abcdef0123456789abcdef}
+  expiration: 86400000 # 24시간 
