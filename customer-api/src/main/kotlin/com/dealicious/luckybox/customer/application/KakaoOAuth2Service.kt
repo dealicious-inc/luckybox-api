@@ -5,10 +5,13 @@ import com.dealicious.luckybox.domain.UserRepository
 import com.dealicious.luckybox.domain.Provider
 import com.dealicious.luckybox.customer.application.dto.LoginResponse
 import com.dealicious.luckybox.customer.application.dto.OAuth2LoginRequest
+import com.dealicious.luckybox.customer.application.dto.KakaoUserInfoResponse
 import com.dealicious.luckybox.customer.security.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
@@ -28,58 +31,65 @@ class KakaoOAuth2Service(
 
     @Transactional
     override fun login(request: OAuth2LoginRequest): LoginResponse {
-        val token = getToken(request.code)
-        val userInfo = getUserInfo(token)
+        val accessToken = getToken(request.code)
+        val userInfo = getUserInfo(accessToken)
         val user = saveOrUpdateUser(userInfo)
-        return LoginResponse(jwtTokenProvider.createToken(user.email))
+        val token = jwtTokenProvider.createToken(user.email)
+        return LoginResponse(token)
     }
 
     private fun getToken(code: String): String {
-        val params = LinkedMultiValueMap<String, String>().apply {
-            add("grant_type", "authorization_code")
-            add("client_id", clientId)
-            add("redirect_uri", redirectUri)
-            add("code", code)
-        }
+        val headers = HttpHeaders()
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
 
-        val response = restTemplate.postForObject(
+        val params: LinkedMultiValueMap<String, String> = LinkedMultiValueMap()
+        params.add("grant_type", "authorization_code")
+        params.add("client_id", clientId)
+        params.add("redirect_uri", redirectUri)
+        params.add("code", code)
+
+        val request = HttpEntity(params, headers)
+        val response = restTemplate.exchange(
             "https://kauth.kakao.com/oauth/token",
-            HttpEntity(params, HttpHeaders()),
+            HttpMethod.POST,
+            request,
             Map::class.java
-        ) as Map<*, *>
+        )
 
-        return response["access_token"] as String
+        return response.body?.get("access_token") as String
     }
 
     private fun getUserInfo(accessToken: String): Map<String, String> {
-        val headers = HttpHeaders().apply {
-            set("Authorization", "Bearer $accessToken")
-        }
+        val headers = HttpHeaders()
+        headers.add("Authorization", "Bearer $accessToken")
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
 
+        val request = HttpEntity(null, headers)
         val response = restTemplate.exchange(
             "https://kapi.kakao.com/v2/user/me",
-            org.springframework.http.HttpMethod.GET,
-            HttpEntity(null, headers),
-            Map::class.java
-        ).body as Map<*, *>
+            HttpMethod.GET,
+            request,
+            KakaoUserInfoResponse::class.java
+        )
 
-        val kakaoAccount = response["kakao_account"] as Map<*, *>
-        val profile = kakaoAccount["profile"] as Map<*, *>
-
+        val userInfo = response.body!!
         return mapOf(
-            "email" to (kakaoAccount["email"] as String),
-            "name" to (profile["nickname"] as String),
-            "providerId" to (response["id"].toString())
+            "id" to userInfo.id.toString(),
+            "name" to userInfo.properties.nickname,
+            "profileImageUrl" to userInfo.properties.profileImage,
+            "email" to "",  // 이메일은 별도 동의가 필요하므로 빈 문자열로 처리
+            "provider" to Provider.KAKAO.name
         )
     }
 
     private fun saveOrUpdateUser(userInfo: Map<String, String>): User {
-        val user = userRepository.findByProviderAndProviderId(Provider.KAKAO, userInfo["providerId"]!!)
+        val user = userRepository.findByProviderAndProviderId(Provider.KAKAO, userInfo["id"]!!)
             ?: User(
                 email = userInfo["email"]!!,
                 name = userInfo["name"]!!,
+                profileImageUrl = userInfo["profileImageUrl"],
                 provider = Provider.KAKAO,
-                providerId = userInfo["providerId"]!!
+                providerId = userInfo["id"]!!
             )
 
         return userRepository.save(user)

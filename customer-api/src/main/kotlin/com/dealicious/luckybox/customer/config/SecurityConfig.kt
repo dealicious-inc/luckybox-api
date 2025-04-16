@@ -14,14 +14,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class SecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http
+        return http
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests {
-                it.requestMatchers("/api/v1/auth/**").permitAll()
+                it.requestMatchers("/api/v1/auth/**", "/h2-console/**").permitAll()
                     .anyRequest().authenticated()
             }
-        return http.build()
+            .headers { it.frameOptions { it.disable() } }  // H2 콘솔을 위한 프레임 옵션 비활성화
+            .build()
     }
 
     @Bean

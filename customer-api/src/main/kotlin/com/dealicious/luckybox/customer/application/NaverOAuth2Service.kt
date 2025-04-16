@@ -9,6 +9,8 @@ import com.dealicious.luckybox.customer.security.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.LinkedMultiValueMap
@@ -31,59 +33,65 @@ class NaverOAuth2Service(
 
     @Transactional
     override fun login(request: OAuth2LoginRequest): LoginResponse {
-        val token = getToken(request.code)
-        val userInfo = getUserInfo(token)
+        val accessToken = getToken(request.code)
+        val userInfo = getUserInfo(accessToken)
         val user = saveOrUpdateUser(userInfo)
-        return LoginResponse(jwtTokenProvider.createToken(user.email))
+        val token = jwtTokenProvider.createToken(user.email)
+        return LoginResponse(token)
     }
 
     private fun getToken(code: String): String {
-        val params = LinkedMultiValueMap<String, String>().apply {
-            add("grant_type", "authorization_code")
-            add("client_id", clientId)
-            add("client_secret", clientSecret)
-            add("code", code)
-            add("state", "RANDOM_STATE")
-            add("redirect_uri", redirectUri)
-        }
+        val headers = HttpHeaders()
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
 
-        val response = restTemplate.postForObject(
+        val params: LinkedMultiValueMap<String, String> = LinkedMultiValueMap()
+        params.add("grant_type", "authorization_code")
+        params.add("client_id", clientId)
+        params.add("client_secret", clientSecret)
+        params.add("code", code)
+        params.add("state", "RANDOM_STATE")
+
+        val request = HttpEntity(params, headers)
+        val response = restTemplate.exchange(
             "https://nid.naver.com/oauth2.0/token",
-            HttpEntity(params, HttpHeaders()),
+            org.springframework.http.HttpMethod.POST,
+            request,
             Map::class.java
-        ) as Map<*, *>
+        )
 
-        return response["access_token"] as String
+        return response.body?.get("access_token") as String
     }
 
     private fun getUserInfo(accessToken: String): Map<String, String> {
-        val headers = HttpHeaders().apply {
-            set("Authorization", "Bearer $accessToken")
-        }
+        val headers = HttpHeaders()
+        headers.add("Authorization", "Bearer $accessToken")
+        headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
 
         val response = restTemplate.exchange(
             "https://openapi.naver.com/v1/nid/me",
-            org.springframework.http.HttpMethod.GET,
+            HttpMethod.GET,
             HttpEntity(null, headers),
             Map::class.java
-        ).body as Map<*, *>
+        )
 
-        val userInfo = response["response"] as Map<*, *>
+        val responseBody = response.body!!
+        val profile = responseBody["response"] as Map<*, *>
 
         return mapOf(
-            "email" to (userInfo["email"] as String),
-            "name" to (userInfo["name"] as String),
-            "providerId" to (userInfo["id"] as String)
+            "id" to (profile["id"] as Long).toString(),
+            "name" to (profile["name"] as String),
+            "email" to (profile["email"] as? String ?: ""),
+            "provider" to Provider.NAVER.name
         )
     }
 
     private fun saveOrUpdateUser(userInfo: Map<String, String>): User {
-        val user = userRepository.findByProviderAndProviderId(Provider.NAVER, userInfo["providerId"]!!)
+        val user = userRepository.findByProviderAndProviderId(Provider.NAVER, userInfo["id"]!!)
             ?: User(
                 email = userInfo["email"]!!,
                 name = userInfo["name"]!!,
                 provider = Provider.NAVER,
-                providerId = userInfo["providerId"]!!
+                providerId = userInfo["id"]!!
             )
 
         return userRepository.save(user)

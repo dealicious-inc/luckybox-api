@@ -6,6 +6,10 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "users")
 class User(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0L,
+
     @Column(nullable = false, unique = true)
     val email: String,
 
@@ -22,11 +26,6 @@ class User(
     @Column(nullable = false)
     val providerId: String,
 
-    @Column(nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-
-    @Column(nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now()
 ) : BaseEntity()
 
 enum class Provider {

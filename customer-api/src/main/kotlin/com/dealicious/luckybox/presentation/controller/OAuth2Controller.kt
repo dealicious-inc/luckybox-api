@@ -5,9 +5,10 @@ import com.dealicious.luckybox.customer.application.dto.OAuth2LoginRequest
 import com.dealicious.luckybox.customer.application.KakaoOAuth2Service
 import com.dealicious.luckybox.customer.application.NaverOAuth2Service
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
-@RestController
+@Controller
 @RequestMapping("/api/v1/auth")
 class OAuth2Controller(
     private val kakaoOAuth2Service: KakaoOAuth2Service,
@@ -27,28 +28,32 @@ class OAuth2Controller(
 
     @GetMapping("/kakao")
     fun kakaoLogin(): String {
-        return "https://kauth.kakao.com/oauth/authorize?" +
+        val url = "https://kauth.kakao.com/oauth/authorize?" +
                 "client_id=$kakaoClientId&" +
                 "redirect_uri=$kakaoRedirectUri&" +
                 "response_type=code"
+        return "redirect:$url"
     }
 
     @GetMapping("/naver")
     fun naverLogin(): String {
-        return "https://nid.naver.com/oauth2.0/authorize?" +
+        val url = "https://nid.naver.com/oauth2.0/authorize?" +
                 "client_id=$naverClientId&" +
                 "redirect_uri=$naverRedirectUri&" +
                 "response_type=code&" +
                 "state=RANDOM_STATE"
+        return "redirect:$url"
     }
 
-    @PostMapping("/kakao/login")
-    fun kakaoLoginCallback(@RequestBody request: OAuth2LoginRequest): LoginResponse {
-        return kakaoOAuth2Service.login(request)
+    @GetMapping("/kakao/login")
+    @ResponseBody
+    fun kakaoLoginCallback(@RequestParam code: String): LoginResponse {
+        return kakaoOAuth2Service.login(OAuth2LoginRequest(code))
     }
 
-    @PostMapping("/naver/login")
-    fun naverLoginCallback(@RequestBody request: OAuth2LoginRequest): LoginResponse {
-        return naverOAuth2Service.login(request)
+    @GetMapping("/naver/login")
+    @ResponseBody
+    fun naverLoginCallback(@RequestParam code: String): LoginResponse {
+        return naverOAuth2Service.login(OAuth2LoginRequest(code))
     }
 } 

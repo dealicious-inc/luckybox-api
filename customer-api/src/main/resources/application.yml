@@ -19,12 +19,12 @@ spring:
 oauth2:
   kakao:
     client-id: ${KAKAO_CLIENT_ID:69448299e8b4e6942b446df6779a7985}
-    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:8080/oauth2/callback/kakao}
+    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:8080/api/v1/auth/kakao/login}
   naver:
-    client-id: ${NAVER_CLIENT_ID}
-    client-secret: ${NAVER_CLIENT_SECRET}
-    redirect-uri: ${NAVER_REDIRECT_URI}
+    client-id: ${NAVER_CLIENT_ID:2Y4JXQ3Z5G7K6Q3Z5}
+    client-secret: ${NAVER_CLIENT_SECRET:2Y4JXQ3Z5G7K6Q3Z5}
+    redirect-uri: ${NAVER_REDIRECT_URI:http://localhost:8080/api/v1/auth/naver/login}
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:0123456789abcdef0123456789abcdef}
   expiration: 86400000 # 24시간 
