@@ -37,7 +37,7 @@ class NaverOAuth2Service(
         val accessToken = getToken(request.code)
         val userInfo = getUserInfo(accessToken)
         val user = saveOrUpdateUser(userInfo)
-        val token = jwtTokenProvider.createToken(user.email)
+        val token = jwtTokenProvider.createToken(user.id!!, user.name)
         return LoginResponse(token)
     }
 
@@ -68,10 +68,11 @@ class NaverOAuth2Service(
         headers.add("Authorization", "Bearer $accessToken")
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8")
 
+        val request = HttpEntity(null, headers)
         val response = restTemplate.exchange(
             "https://openapi.naver.com/v1/nid/me",
             HttpMethod.GET,
-            HttpEntity(null, headers),
+            request,
             NaverUserInfoResponse::class.java
         )
 

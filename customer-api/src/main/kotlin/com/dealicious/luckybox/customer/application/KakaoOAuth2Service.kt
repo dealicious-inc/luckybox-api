@@ -34,7 +34,7 @@ class KakaoOAuth2Service(
         val accessToken = getToken(request.code)
         val userInfo = getUserInfo(accessToken)
         val user = saveOrUpdateUser(userInfo)
-        val token = jwtTokenProvider.createToken(user.email)
+        val token = jwtTokenProvider.createToken(user.id!!, user.name)
         return LoginResponse(token)
     }
 
