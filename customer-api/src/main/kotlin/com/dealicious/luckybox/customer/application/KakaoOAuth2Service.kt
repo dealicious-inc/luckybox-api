@@ -76,8 +76,8 @@ class KakaoOAuth2Service(
         return mapOf(
             "id" to userInfo.id.toString(),
             "name" to userInfo.properties.nickname,
-            "profileImageUrl" to userInfo.properties.profileImage,
             "email" to "",  // 이메일은 별도 동의가 필요하므로 빈 문자열로 처리
+            "profileImageUrl" to userInfo.properties.profileImage,
             "provider" to Provider.KAKAO.name
         )
     }

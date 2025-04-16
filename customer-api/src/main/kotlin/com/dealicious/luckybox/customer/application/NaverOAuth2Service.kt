@@ -5,6 +5,7 @@ import com.dealicious.luckybox.domain.UserRepository
 import com.dealicious.luckybox.domain.Provider
 import com.dealicious.luckybox.customer.application.dto.LoginResponse
 import com.dealicious.luckybox.customer.application.dto.OAuth2LoginRequest
+import com.dealicious.luckybox.customer.application.dto.NaverUserInfoResponse
 import com.dealicious.luckybox.customer.security.JwtTokenProvider
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -54,7 +55,7 @@ class NaverOAuth2Service(
         val request = HttpEntity(params, headers)
         val response = restTemplate.exchange(
             "https://nid.naver.com/oauth2.0/token",
-            org.springframework.http.HttpMethod.POST,
+            HttpMethod.POST,
             request,
             Map::class.java
         )
@@ -71,16 +72,15 @@ class NaverOAuth2Service(
             "https://openapi.naver.com/v1/nid/me",
             HttpMethod.GET,
             HttpEntity(null, headers),
-            Map::class.java
+            NaverUserInfoResponse::class.java
         )
 
-        val responseBody = response.body!!
-        val profile = responseBody["response"] as Map<*, *>
-
+        val userInfo = response.body!!
         return mapOf(
-            "id" to (profile["id"] as Long).toString(),
-            "name" to (profile["name"] as String),
-            "email" to (profile["email"] as? String ?: ""),
+            "id" to userInfo.response.id,
+            "name" to userInfo.response.name,
+            "email" to userInfo.response.email,
+            "profileImageUrl" to userInfo.response.profileImage,
             "provider" to Provider.NAVER.name
         )
     }
@@ -90,6 +90,7 @@ class NaverOAuth2Service(
             ?: User(
                 email = userInfo["email"]!!,
                 name = userInfo["name"]!!,
+                profileImageUrl = userInfo["profileImageUrl"],
                 provider = Provider.NAVER,
                 providerId = userInfo["id"]!!
             )
